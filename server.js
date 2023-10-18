@@ -1,14 +1,6 @@
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
-
-// MYSQL connection
-const connection = mysql.createConnection({
-    host: "localhost",
-    port: 3333,
-    user: "root",
-    password: "",
-    database: "employeeTracker_db"
-})
+const db = require("./db/connection");
 
 // start sql employee tracker
 function init(){
@@ -70,6 +62,8 @@ function init(){
                 console.log("Thank you GoodBye!");
                 break; 
         }
-    })
-
+    });
 }
+
+
+// View all Departments
