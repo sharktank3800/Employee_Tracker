@@ -64,5 +64,12 @@ function init(){
     });
 }
 
+db.connect((err) => {
+    if(err) throw err;
+    console.log("Successfully connected to database");
+
+    // initialize app
+    init();
+})
 
 // View all Departments
