@@ -54,7 +54,7 @@ function init(){
             case "View Employees by Manager":
                 viewEmployeeByManager();
                 break;
-            case "Delete Departments | Roles | Employees":
+            case "Delete | Departments | Roles | Employees":
                 deleteDRE();
                 break;
             case "Exit":
@@ -365,3 +365,8 @@ function updateEmployeeRole(){
         })
     })
 }
+
+
+process.on("exit", () => {
+    connection.end();
+});
