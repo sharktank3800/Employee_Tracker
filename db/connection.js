@@ -1,5 +1,5 @@
 const mysql = require("mysql2");
-const connection = mysql.createConnection({
+const db = mysql.createConnection({
     host: "localhost",
     port: 3333,
     user: "root",
@@ -7,4 +7,4 @@ const connection = mysql.createConnection({
     database: "employeeTracker_db"
 })
 
-module.exports = connection;
+module.exports = db;
