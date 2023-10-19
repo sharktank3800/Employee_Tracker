@@ -1,6 +1,5 @@
 const inquirer = require("inquirer");
-const db = require("./db/connection");
-const connection = require("./db/connection");
+const db = require("./db/connection.js");
 
 // start sql employee tracker
 function init(){
@@ -58,25 +57,19 @@ function init(){
                 deleteDRE();
                 break;
             case "Exit":
-                connection.end();
+                db.end();
                 console.log("Thank you GoodBye!");
                 break; 
         }
     });
 }
 
-db.connect((err) => {
-    if(err) throw err;
-    console.log("Successfully connected to database");
 
-    // initialize app
-    init();
-})
 
 // View all Departments
 function viewAllDepartments(){
     const query = "SELECT * FROM departments";
-    connection.query(query, (err, res) => {
+    db.query(query, (err, res) => {
         if(err) throw err;
         console.table(res);
 
@@ -89,7 +82,7 @@ function viewAllDepartments(){
 // view all roles
 function viewAllRoles(){
     const query = "SELECT roles.title, roles.id, departments.department_name, roles.salary from roles oin departments on roles.department_id = departments.id";
-    connection.query(query, (err, res) => {
+    db.query(query, (err, res) => {
         if(err) throw err;
         console.table(res);
 
@@ -107,7 +100,7 @@ function viewAllEmployees(){
     LEFT JOIN departments d ON r.department_id = d.id
     LEFT JOIN employee m ON e.manager_id = m.id;`;
 
-    connection.query(query, (err, res) => {
+    db.query(query, (err, res) => {
         if(err) throw err;
         console.table(res);
 
@@ -126,7 +119,7 @@ function addDepartment(){
         console.log(selected.name);
         
         const query = `INSERT INTO departments (department_name) VALUES ("${selected.name}")`;
-        connection.query(query, (err, res) => {
+        db.query(query, (err, res) => {
             if(err) throw err;
             console.log(`Department ${selected.name} to the database!`);
 
@@ -141,7 +134,7 @@ function addDepartment(){
 function addRole(){
     const query = "SELECT * FROM departments";
 
-    connection.query(query, (err, res) => {
+    db.query(query, (err, res) => {
         if(err) throw err;
         inquirer.prompt([
             {
@@ -168,7 +161,7 @@ function addRole(){
             const selectedDepartment = res.find((dept) => dept.department.name === selected.department);
 
             const query = "INSERT INTO roles SET?";
-            connection.query(query, 
+            db.query(query, 
                 {
                     title: selected.title,
                     salary: selected.salary,
@@ -189,7 +182,7 @@ function addRole(){
 function addEmployee(){
 
     // pulling list of roles from db
-    connection.query("SELECT id, title FROM roles", (err, res) => {
+    db.query("SELECT id, title FROM roles", (err, res) => {
         if(err){
             console.error(err);
             return;
@@ -201,7 +194,7 @@ function addEmployee(){
         }));
 
 
-        connection.query(
+        db.query(
             `SELECT id, CONCAT(first_name, "", last_name) AS name FROM employee`,
             (err, res) => {
                 if(err){
@@ -253,7 +246,7 @@ function addEmployee(){
                         selected.managerId
                     ];
 
-                    connection.query(query, values, (err) => {
+                    db.query(query, values, (err) => {
                         if(err){
                             console.error(err);
                             return;
@@ -282,7 +275,7 @@ function addManager(){
     const queryEmply = "SELECT * FROM employee";
     
     
-    connection.query(queryDept, (err, res) => {
+    db.query(queryDept, (err, res) => {
         if(err)throw err;
         inquirer.prompt([
             {
@@ -311,7 +304,7 @@ function addManager(){
             const manager = res.find((employee) => `${employee.first_name} ${employee.last_name}` === selected.manager);
 
             const query = "UPDATE employee SET manager_id = ? WHERE id = ? AND role_id IN (SELECT id FROM roles WHERE department_id = ?)";
-            connection.query(query,
+            db.query(query,
                 [manager.id, employee.id, dept.id],
                 (err, res) => {
                     if(err) throw err;
@@ -328,9 +321,9 @@ function addManager(){
 function updateEmployeeRole(){
     const queryEmply = "SELECT employee.id, employee.first_name, employee.last_name, roles.title FROM employee LEFT JOIN roles ON employee.role_id = roles.id";
     const queryRoles = "SELECT * FROM roles";
-    connection.query(queryEmply, (err, res) => {
+    db.query(queryEmply, (err, res) => {
         if(err) throw err;
-        connection.query(queryRoles, (err, res) => {
+        db.query(queryRoles, (err, res) => {
             if(err) throw err;
             inquirer.prompt([
                 {
@@ -352,7 +345,7 @@ function updateEmployeeRole(){
                 const role = res.find((role) => role.title === selected.role);
 
                 const query = "UPDATE employee set role_id = ? WHERE id = ?";
-                connection.query(query,
+                db.query(query,
                     [role.id, employee.id],
                     (err,res) => {
                         if(err) throw err;
@@ -368,5 +361,5 @@ function updateEmployeeRole(){
 
 
 process.on("exit", () => {
-    connection.end();
+    db.end();
 });
