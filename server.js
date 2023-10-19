@@ -1,6 +1,16 @@
 const inquirer = require("inquirer");
 const db = require("./db/connection.js");
 
+db.connect((err) => {
+    if(err) throw err;
+    console.log("Successfully connected to database");
+
+    // initialize app
+    init();
+})
+
+
+
 // start sql employee tracker
 function init(){
     inquirer.prompt({
